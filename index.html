@@ -283,6 +283,38 @@
     .status.ok { color: var(--success); }
     .status.err { color: var(--error); }
 
+    /* Modal de Login */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal-content {
+      background: var(--card-bg); border: 1px solid var(--border-color);
+      padding: 32px; border-radius: 20px; width: 90%; max-width: 360px;
+      display: flex; flex-direction: column; gap: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transform: translateY(20px); transition: transform 0.3s;
+    }
+    .modal-overlay.active .modal-content { transform: translateY(0); }
+    .modal-content h3 { color: white; margin-bottom: 8px; font-size: 1.25rem; text-align: center; }
+    .modal-content input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--input-bg); color: white; font-size: 1rem; }
+    .modal-content input:focus { outline: none; border-color: var(--primary); }
+    .modal-btn-primary { background: linear-gradient(135deg, var(--primary), #6366f1); color: white; border: none; padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: transform 0.2s; }
+    .modal-btn-primary:hover { transform: translateY(-2px); }
+    .modal-btn-secondary { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: background 0.2s; }
+    .modal-btn-secondary:hover { background: rgba(255, 255, 255, 0.05); color: white; }
+    .admin-link {
+      background: none; border: none; color: var(--text-muted); 
+      font-size: 0.8rem; cursor: pointer; display: inline-flex; 
+      align-items: center; gap: 6px; padding: 8px 16px; 
+      border-radius: 8px; transition: all 0.2s; margin-top: 12px;
+    }
+    .admin-link:hover { color: white; background: rgba(255, 255, 255, 0.05); }
+
     /* =========================================
        LAYOUT PRINCIPAL (MOBILE FIRST)
        ========================================= */
@@ -686,6 +718,27 @@
 
   <div style="text-align: center; margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); max-width: 700px; padding: 0 20px; z-index: 1;">
     🔒 <strong>Compromisso de Sigilo (LGPD):</strong> Seus dados pessoais sensíveis, profissionais e financeiros são coletados exclusivamente para a análise de locação e comprovação de renda. Garantimos a total segurança, privacidade e confidencialidade das informações, que não serão compartilhadas com terceiros para outros fins, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+    
+    <div style="margin-top: 16px;">
+      <button class="admin-link" onclick="abrirModalAdmin()">
+        <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 14px; height: 14px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        Acesso Gestão
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Acesso Gestão</h3>
+      <input type="text" id="loginUser" placeholder="Usuário">
+      <input type="password" id="loginPass" placeholder="Senha">
+      <button class="modal-btn-primary" onclick="fazerLogin()">Acessar Painel</button>
+      <button class="modal-btn-secondary" onclick="fecharModalAdmin()">Cancelar</button>
+      <div id="loginError" style="color: var(--error); font-size: 0.85rem; text-align: center; display: none;">Login ou Senha incorretos.</div>
+    </div>
   </div>
 
   <script>
@@ -730,6 +783,31 @@
         BTN.innerHTML = originalText;
       }
     });
+
+    // Funções do Modal de Login
+    function abrirModalAdmin() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+    
+    function fecharModalAdmin() {
+      document.getElementById('loginModal').classList.remove('active');
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+    }
+
+    function fazerLogin() {
+      const u = document.getElementById('loginUser').value;
+      const p = document.getElementById('loginPass').value;
+      
+      // Credenciais do usuário
+      if (u === 'gestao' && p === 'gestao') {
+        sessionStorage.setItem('isAdminLogado', 'true');
+        window.location.href = 'admin.html';
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
 
     // Add CSS for the spin animation
     if(!document.getElementById('spin-style')) {

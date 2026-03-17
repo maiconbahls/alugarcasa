@@ -294,6 +294,12 @@
           </svg>
           Atualizar Dados
         </button>
+        <button class="action-btn" onclick="sairPainel()" style="padding: 10px 16px; border-radius: 10px; font-weight: 600; gap: 8px;">
+          Sair
+          <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -334,6 +340,16 @@
   </div>
 
   <script>
+    // Proteção de Rota Simplificada (Front-end)
+    if (sessionStorage.getItem('isAdminLogado') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    function sairPainel() {
+      sessionStorage.removeItem('isAdminLogado');
+      window.location.href = 'index.html';
+    }
+
     // URL da API do Google Apps Script (Você pode substituir pela mesma URL que usa para salvar)
     // ATENÇÃO: Para o Google Sheets retornar dados, você deve implementar o método "doGet" na sua planillha.
     // Como demonstração até você plugar, criamos dados mockados super realistas para você ver a interface:
