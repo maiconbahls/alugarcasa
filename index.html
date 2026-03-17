@@ -178,6 +178,17 @@
       opacity: 0.6;
       cursor: pointer;
     }
+
+    /* Ocultar setinhas do Input de Número (Renda e Aluguel) */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield; /* Para Firefox */
+      appearance: textfield;
+    }
     
     input:focus, select:focus { 
       outline: none; 
