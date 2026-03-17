@@ -10,6 +10,18 @@ function doPost(e) {
     const dataHoraAtual = new Date();
     const dataFormatada = Utilities.formatDate(dataHoraAtual, "America/Sao_Paulo", "dd/MM/yyyy HH:mm:ss");
 
+    // Se a planilha estiver vazia (apenas uma linha ou nenhuma), adiciona o cabeçalho
+    if (sheet.getLastRow() === 0) {
+      const headers = [
+        "Data/Hora Cadastro", "Nome Completo", "CPF", "RG", "Nascimento", 
+        "E-mail", "WhatsApp", "Estado Civil", "Profissão", "CLT?", 
+        "Empresa", "Admissão", "Renda Bruta (R$)", "Aluguel Pretendido (R$)"
+      ];
+      sheet.appendRow(headers);
+      // Opcional: coloca negrito no cabeçalho
+      sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#f3f3f3");
+    }
+
     // Prepara a linha a ser inserida (A ordem aqui será a ordem das colunas no Excel)
     const rowData = [
       dataFormatada,            // Coluna A: Data/Hora do Cadastro
