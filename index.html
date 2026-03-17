@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lista de Espera - Locação</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --secondary: #0ea5e9;
+      --bg-dark: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(15, 23, 42, 0.6);
+      --input-focus: rgba(79, 70, 229, 0.5);
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+    }
+    
+    body { 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center; 
+      gap: 24px;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.15), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.15), transparent 25%);
+      color: var(--text-main); 
+      padding: 40px 20px; 
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    .blob {
+      position: absolute;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.5;
+      animation: float 10s infinite alternate ease-in-out;
+    }
+    .blob-1 {
+      top: 10%;
+      left: 10%;
+      width: 300px;
+      height: 300px;
+      background: var(--primary);
+      border-radius: 50%;
+    }
+    .blob-2 {
+      bottom: 10%;
+      right: 10%;
+      width: 400px;
+      height: 400px;
+      background: var(--secondary);
+      border-radius: 50%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(20px, -40px) scale(1.1); }
+    }
+    
+    .card { 
+      width: 100%; 
+      max-width: 1200px; 
+      background: var(--card-bg); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px; 
+      padding: 40px; 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+      border: 1px solid var(--border-color); 
+      z-index: 1;
+    }
+    
+    .header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .header-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+    }
+
+    .header-icon svg {
+      width: 28px;
+      height: 28px;
+      color: white;
+    }
+
+    h1 { 
+      font-size: 2rem; 
+      font-weight: 700;
+      margin-bottom: 8px; 
+      background: linear-gradient(to right, #fff, #cbd5e1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+    
+    p.desc { 
+      font-size: 1rem; 
+      color: var(--text-muted); 
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 20px 24px; 
+    }
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    label { 
+      font-size: 0.85rem; 
+      font-weight: 600;
+      color: var(--text-muted); 
+      margin-bottom: 8px; 
+      transition: color 0.2s;
+    }
+    
+    input, select { 
+      width: 100%; 
+      padding: 14px 16px; 
+      border-radius: 12px; 
+      border: 1px solid var(--border-color); 
+      background: var(--input-bg); 
+      color: var(--text-main); 
+      font-size: 1rem; 
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2007/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.6;
+      cursor: pointer;
+    }
+    
+    input:focus, select:focus { 
+      outline: none; 
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 4px var(--input-focus); 
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .input-group:focus-within label {
+      color: var(--primary);
+    }
+    
+    .full { 
+      grid-column: 1 / -1; 
+    }
+    
+    .footer { 
+      margin-top: 40px; 
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      gap: 24px; 
+      flex-wrap: wrap; 
+    }
+    
+    .note { 
+      font-size: 0.85rem; 
+      color: var(--text-muted); 
+      max-width: 400px; 
+      line-height: 1.5;
+      display: flex;
+      gap: 12px;
+    }
+
+    .note svg {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      color: var(--secondary);
+    }
+    
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      flex-grow: 1;
+    }
+
+    button { 
+      padding: 14px 28px; 
+      border-radius: 12px; 
+      border: none; 
+      background: linear-gradient(135deg, var(--primary), #6366f1); 
+      color: white; 
+      font-weight: 600; 
+      font-size: 1rem; 
+      cursor: pointer; 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center;
+      gap: 8px; 
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.4);
+      background: linear-gradient(135deg, var(--primary-hover), #4f46e5); 
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled { 
+      opacity: 0.7; 
+      cursor: not-allowed; 
+      transform: none;
+    }
+
+    button svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.2s;
+    }
+
+    button:hover:not(:disabled) svg {
+      transform: translateX(4px);
+    }
+    
+    .status { 
+      font-size: 0.9rem; 
+      min-height: 1.5em; 
+      font-weight: 500;
+      text-align: right;
+    }
+    
+    .status.ok { color: var(--success); }
+    .status.err { color: var(--error); }
+
+    /* =========================================
+       LAYOUT PRINCIPAL (MOBILE FIRST)
+       ========================================= */
+    .content-split {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      margin-top: 32px;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .right-panel {
+      background: rgba(15, 23, 42, 0.3);
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Property Section Styles */
+    .property-section {
+      background: rgba(15, 23, 42, 0.4);
+      border-radius: 20px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .property-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .property-price {
+      background: linear-gradient(135deg, var(--success), #059669);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      color: white;
+      white-space: nowrap;
+      align-self: flex-start;
+    }
+    .property-gallery {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) transparent;
+      margin: 0 -8px; /* Margem negativa para compensar padding interno no scroll mobile */
+      padding: 0 8px 12px 8px;
+    }
+    .property-gallery::-webkit-scrollbar {
+      height: 6px;
+    }
+    .property-gallery::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .property-gallery::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 10px;
+    }
+    .property-photo {
+      width: 260px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .property-info {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .info-item strong {
+      color: var(--text-main);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .info-item svg {
+      width: 24px;
+      height: 24px;
+      color: var(--secondary);
+      flex-shrink: 0;
+    }
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #25D366;
+      color: white !important;
+      padding: 14px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s, transform 0.2s;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    }
+    .whatsapp-btn:hover {
+      background: #128C7E;
+      transform: translateY(-2px);
+    }
+
+    /* =========================================
+       MEDIA QUERIES (TABLETS E CELULARES)
+       ========================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 8px;
+        gap: 16px;
+      }
+      .card {
+        padding: 24px 16px;
+        border-radius: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      .right-panel {
+        padding: 16px;
+      }
+      .footer {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .note {
+        max-width: 100%;
+      }
+      .button-container {
+        align-items: stretch;
+      }
+      .status {
+        text-align: center;
+      }
+      .property-photo {
+        width: 240px;
+        height: 160px;
+      }
+    }
+
+    /* =========================================
+       LAYOUT DESKTOP (> 992px)
+       ========================================= */
+    @media (min-width: 992px) {
+      body {
+        padding: 40px;
+      }
+      .card {
+        padding: 40px;
+        max-width: 1300px;
+      }
+      
+      .content-split {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 40px;
+        margin-top: 0;
+      }
+      
+      .header {
+        margin-bottom: 48px;
+      }
+
+      .left-panel {
+        width: 440px; /* Largura adequada para a casa no PC */
+        flex-shrink: 0;
+        position: sticky;
+        top: 40px; /* Faz a foto da casa "flutuar" enquanto rola o form */
+      }
+
+      .property-section {
+        margin-bottom: 0;
+      }
+      
+      .property-title {
+        flex-direction: row;
+        align-items: center;
+      }
+      
+      .property-photo {
+        width: 340px;
+        height: 240px;
+      }
+
+      .right-panel {
+        flex: 1;
+        padding: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <main class="card">
+    <div class="header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+      </div>
+      <h1>Lista de Espera para Locação</h1>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <p class="desc">Para iniciar o processo de locação, preencha o formulário de análise cadastral abaixo com seus dados pessoais, profissionais e de renda. As informações serão utilizadas somente para avaliar a proposta e verificar se o valor do aluguel não ultrapassa 30% da renda bruta informada.</p>
+        <p class="desc">Se houver outro participante na locação, cada interessado deverá enviar um formulário próprio, com seus dados individuais.</p>
+      </div>
+    </div>
+
+    <!-- Informações da Casa e Galeria -->
+    <div class="content-split">
+      <div class="left-panel">
+        <div class="property-section">
+          
+          <div class="property-title">
+            <span>Casa para Alugar - Condomínio Residencial</span>
+            <span class="property-price">R$ 930,00</span>
+          </div>
+
+          <div class="property-gallery" id="propertyGallery">
+            <img src="CASA/649551805_945110114603953_635633332681285747_n.jpg" alt="Foto da Casa 1" class="property-photo">
+            <img src="CASA/649568182_1652519656167518_3318667259667776404_n.jpg" alt="Foto da Casa 2" class="property-photo">
+            <img src="CASA/649579658_1612370280094954_7421865496469108737_n.jpg" alt="Foto da Casa 3" class="property-photo">
+            <img src="CASA/649599052_901873762482292_2002575543374124053_n.jpg" alt="Foto da Casa 4" class="property-photo">
+            <img src="CASA/649908326_2147871046024430_630037977728159299_n.jpg" alt="Foto da Casa 5" class="property-photo">
+            <img src="CASA/650134750_2125992661588364_7982892078051402429_n.jpg" alt="Foto da Casa 6" class="property-photo">
+            <img src="CASA/650142883_2321281315023923_3244765048316082627_n.jpg" alt="Foto da Casa 7" class="property-photo">
+          </div>
+
+          <div class="property-info">
+            <div class="info-item">
+              <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+              </svg>
+              <div>
+                <strong>Endereço</strong>
+                Rua Maria Aparecida Cuissi Cesco, 1500 (Jardim Leonor)
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m8.25-3v-6c0-1.243-.9-2.25-2.025-2.25h-2.138A3.375 3.375 0 0013.5 10.5h-3A3.375 3.375 0 007.125 9.75H5.025C3.9 9.75 3 10.757 3 12v6c0 1.243.9 2.25 2.025 2.25h13.95c1.125 0 2.025-1.007 2.025-2.25z" />
+              </svg>
+              <div>
+                <strong>Configuração</strong>
+                2 Dormitórios
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-1.164.57 5.215 5.215 0 01.363 4.256c.16.48-.37.86-.807.603L12 16.89l-4.708 2.525c-.436.258-.967-.123-.807-.603a5.216 5.216 0 01.363-4.256.563.563 0 00-1.164-.57L1.48 10.385c-.38-.325-.178-.948.322-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+              </svg>
+              <div>
+                <strong>Destaque</strong>
+                Localização estratégica, próxima a serviços e com a tranquilidade de um condomínio. Oportunidade para quem busca conforto e segurança em uma das melhores regiões de Presidente Prudente!
+              </div>
+            </div>
+          </div>
+          
+          <a href="https://wa.me/5518988067827" target="_blank" class="whatsapp-btn">
+            <svg xmlns="http://www.w3.org/2007/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.9 7.9 0 0 0 13.6 2.326zM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+            </svg>
+            Entrar em Contato (WhatsApp)
+          </a>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <form id="waitlistForm" class="grid">
+          <div class="input-group full">
+            <label>Nome completo</label>
+            <input name="nome_completo" placeholder="Digite seu nome completo" required />
+          </div>
+
+          <div class="input-group">
+            <label>CPF</label>
+            <input name="cpf" placeholder="000.000.000-00" required />
+          </div>
+
+          <div class="input-group">
+            <label>RG</label>
+            <input name="rg" placeholder="Apenas números" />
+          </div>
+
+          <div class="input-group">
+            <label>Data de nascimento</label>
+            <input type="date" name="data_nascimento" required />
+          </div>
+
+          <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" name="email" placeholder="seu@email.com" required />
+          </div>
+
+          <div class="input-group">
+            <label>Fone (DDD)</label>
+            <input name="telefone" placeholder="(00) 00000-0000" required />
+          </div>
+
+          <div class="input-group">
+            <label>Estado civil</label>
+            <select name="estado_civil" required>
+              <option value="" disabled selected>Selecione seu estado civil</option>
+              <option>Solteiro(a)</option>
+              <option>Casado(a)</option>
+              <option>União estável</option>
+              <option>Divorciado(a)</option>
+              <option>Viúvo(a)</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Profissão</label>
+            <input name="profissao" placeholder="Ex: Analista de Sistemas" required />
+          </div>
+
+          <div class="input-group">
+            <label>CLT?</label>
+            <select name="clt" required>
+              <option value="" disabled selected>Selecione</option>
+              <option>Sim</option>
+              <option>Não</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Empresa (se CLT)</label>
+            <input name="empresa" placeholder="Nome da empresa" />
+          </div>
+
+          <div class="input-group">
+            <label>Admissão na empresa</label>
+            <input type="date" name="data_admissao" />
+          </div>
+
+          <div class="input-group">
+            <label>Renda bruta estimada (R$)</label>
+            <input type="number" name="renda_bruta" placeholder="0,00" min="0" step="0.01" required />
+          </div>
+
+          <div class="input-group">
+            <label>Valor estimado do aluguel (R$)</label>
+            <input type="number" name="valor_aluguel" placeholder="0,00" min="0" step="0.01" required />
+          </div>
+        </form>
+
+        <div class="footer">
+          <div class="note">
+            <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+            <span>Caso deseje incluir outro participante, cada pessoa deve preencher um formulário separado, assumindo responsabilidade pela locação.</span>
+          </div>
+          
+          <div class="button-container">
+            <button id="submitBtn" type="button">
+              Enviar para Análise
+              <svg xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+            <div id="status" class="status"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div style="text-align: center; margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); max-width: 700px; padding: 0 20px; z-index: 1;">
+    🔒 <strong>Compromisso de Sigilo (LGPD):</strong> Seus dados pessoais sensíveis, profissionais e financeiros são coletados exclusivamente para a análise de locação e comprovação de renda. Garantimos a total segurança, privacidade e confidencialidade das informações, que não serão compartilhadas com terceiros para outros fins, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+  </div>
+
+  <script>
+    const FORM = document.getElementById('waitlistForm');
+    const BTN = document.getElementById('submitBtn');
+    const STATUS = document.getElementById('status');
+
+    const SCRIPT_URL = 'COLE_A_URL_DO_APPS_SCRIPT_AQUI';
+
+    BTN.addEventListener('click', async () => {
+      if (!FORM.reportValidity()) return;
+
+      const formData = Object.fromEntries(new FormData(FORM).entries());
+
+      BTN.disabled = true;
+      const originalText = BTN.innerHTML;
+      BTN.innerHTML = `
+        <svg class="animate-spin" style="animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2007/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Enviando...
+      `;
+      STATUS.textContent = '';
+      STATUS.className = 'status';
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors', // se usar JSON público simples
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        FORM.reset();
+        STATUS.textContent = 'Dados enviados com sucesso para análise da lista de espera.';
+        STATUS.className = 'status ok';
+      } catch (e) {
+        STATUS.textContent = 'Não foi possível enviar. Tente novamente em alguns instantes.';
+        STATUS.className = 'status err';
+      } finally {
+        BTN.disabled = false;
+        BTN.innerHTML = originalText;
+      }
+    });
+
+    // Add CSS for the spin animation
+    if(!document.getElementById('spin-style')) {
+      const style = document.createElement('style');
+      style.id = 'spin-style';
+      style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
+    }
+
+    // Auto-sliding Gallery
+    const gallery = document.getElementById('propertyGallery');
+    let autoScrollTimer;
+
+    function startAutoScroll() {
+      autoScrollTimer = setInterval(() => {
+        if (!gallery) return;
+        
+        const firstPhoto = gallery.querySelector('.property-photo');
+        if (firstPhoto) {
+           const scrollStep = firstPhoto.clientWidth + 12; // Largura da foto + Espaçamento (gap 12px)
+           const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+           
+           // Se chegou perto do final, volta para a primeira foto
+           if (gallery.scrollLeft >= maxScroll - 5) {
+             gallery.scrollTo({ left: 0, behavior: 'smooth' });
+           } else {
+             gallery.scrollBy({ left: scrollStep, behavior: 'smooth' });
+           }
+        }
+      }, 3000); // Passa a foto a cada 3 segundos
+    }
+
+    // Pausar o auto-scroll caso a pessoa ponha o dedo/mouse por cima para visualizar a foto
+    if (gallery) {
+      startAutoScroll();
+      gallery.addEventListener('mouseenter', () => clearInterval(autoScrollTimer));
+      gallery.addEventListener('mouseleave', startAutoScroll);
+      gallery.addEventListener('touchstart', () => clearInterval(autoScrollTimer));
+      gallery.addEventListener('touchend', startAutoScroll);
+    }
+  </script>
+</body>
+</html>
