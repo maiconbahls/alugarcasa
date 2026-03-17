@@ -757,7 +757,7 @@
     const BTN = document.getElementById('submitBtn');
     const STATUS = document.getElementById('status');
 
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzoZvfEWQUhachaFSU6a9d10htCrIVL7Eo5YPOdP25Ekodl7_NSFD0QplNTt87u3Q6E-A/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSWByrZIi_r87ZxM3Ryk7rPsXuE7scF_dIEHrRxSughFOXvxUEjpXlSEvghoSTuHgx1Q/exec';
 
     BTN.addEventListener('click', async () => {
       if (!FORM.reportValidity()) return;
@@ -778,8 +778,8 @@
       try {
         const res = await fetch(SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors', // se usar JSON público simples
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors', // Alterado para cors para o navegador aceitar a resposta do Google
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Google Apps Script lida melhor com text/plain no POST
           body: JSON.stringify(formData)
         });
 

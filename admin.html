@@ -485,7 +485,7 @@
       } else {
         // Aqui é onde você fará o Fetch do Google Apps Script com GET!
         try {
-          const response = await fetch('https://script.google.com/macros/s/AKfycbzoZvfEWQUhachaFSU6a9d10htCrIVL7Eo5YPOdP25Ekodl7_NSFD0QplNTt87u3Q6E-A/exec');
+          const response = await fetch('https://script.google.com/macros/s/AKfycbzSWByrZIi_r87ZxM3Ryk7rPsXuE7scF_dIEHrRxSughFOXvxUEjpXlSEvghoSTuHgx1Q/exec');
           const json = await response.json();
           window.dadosGlobaisDaTabela = json; // Salvar para o Exportar Excel Funcionar com os dados reais!!
           renderizarTabela(json); // Renderiza a tela
