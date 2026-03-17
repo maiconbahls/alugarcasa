@@ -337,7 +337,7 @@
     // URL da API do Google Apps Script (Você pode substituir pela mesma URL que usa para salvar)
     // ATENÇÃO: Para o Google Sheets retornar dados, você deve implementar o método "doGet" na sua planillha.
     // Como demonstração até você plugar, criamos dados mockados super realistas para você ver a interface:
-    const DEMO_MODE = true; 
+    const DEMO_MODE = false; 
 
     // Função que formata dinheiro em Reais (BRL)
     const formatoReal = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -468,14 +468,14 @@
         }, 1000);
       } else {
         // Aqui é onde você fará o Fetch do Google Apps Script com GET!
-        // try {
-        //   const response = await fetch('COLE_SUA_URL_DO_APP_SCRIPT_AQUI');
-        //   const json = await response.json();
-        //   window.dadosGlobaisDaTabela = json; // Salvar para o Exportar Excel Funcionar com os dados reais!!
-        //   renderizarTabela(json); // Renderiza a tela
-        // } catch (e) {
-        //   loader.textContent = 'Erro ao carregar dados do servidor.';
-        // }
+        try {
+          const response = await fetch('https://script.google.com/macros/s/AKfycbwMZFZ_P-PbskyPwCCdFg2HpeQI6vWRrN5r5wnlgp-r_CjEusoHYClITSTwLCdCzd03FQ/exec');
+          const json = await response.json();
+          window.dadosGlobaisDaTabela = json; // Salvar para o Exportar Excel Funcionar com os dados reais!!
+          renderizarTabela(json); // Renderiza a tela
+        } catch (e) {
+          loader.textContent = 'Erro ao carregar dados do servidor.';
+        }
       }
     }
 
